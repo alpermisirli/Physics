@@ -8,6 +8,8 @@ namespace Physics2d
 {
     public class Particle
     {
+
+        public Rigidbody2D rb;
         /// <summary>
         /// Gets or sets the damping of the particle.
         /// </summary>
@@ -208,7 +210,7 @@ namespace Physics2d
         /// <summary>
         /// Clear the accumulated force.
         /// </summary>
-        private void ClearAccumulator()
+        public void ClearAccumulator()
         {
             forceAccum.Clear();
         }

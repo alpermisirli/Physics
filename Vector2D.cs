@@ -4,14 +4,18 @@ using System.Collections.Generic;
 using System.IO.Compression;
 using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Physics2d
 {
+    //I may remove serializable part later
+    [System.Serializable]
     public class Vector2D
     {
         //Coordinates of the Vector2D
-        public float x { get; set; }
-        public float y { get; set; }
+        public float x;
+        public float y;
+        //removed getter and setter
 
         //Default Vector2D Constructor
         public Vector2D()
@@ -19,6 +23,19 @@ namespace Physics2d
             x = 0;
             y = 0;
         }
+
+        //todo i may remove
+        /// <summary>
+        ///   <para>Set x and y components of an existing Vector2.</para>
+        /// </summary>
+        /// <param name="newX"></param>
+        /// <param name="newY"></param>
+        public void Set(float newX, float newY)
+        {
+            this.x = newX;
+            this.y = newY;
+        }
+        //todo i may remove
 
         //Vector2D Constructor
         public Vector2D(float x, float y)
@@ -28,7 +45,7 @@ namespace Physics2d
         }
 
         /// <summary>
-        /// Creates an instance of the <see cref="Vector3"/> class.
+        /// Creates an instance of the <see cref="Vector2D"/> class.
         /// </summary>
         /// <param name="vector">The vector to copy.</param>
         public Vector2D(Vector2D vector)
@@ -42,6 +59,8 @@ namespace Physics2d
         private static readonly Vector2D downVector = new Vector2D(0.0f, -1f);
         private static readonly Vector2D leftVector = new Vector2D(-1f, 0.0f);
         private static readonly Vector2D rightVector = new Vector2D(1f, 0.0f);
+        private static readonly Vector2D gravityVector = new Vector2D(0f, -10.0f);
+
         /// <summary>
         ///   <para>Shorthand for writing Vector2(0, 0).</para>
         /// </summary>
@@ -108,8 +127,13 @@ namespace Physics2d
             }
         }
 
+        public static Vector2D gravity
+        {
+            get { return Vector2D.gravityVector; }
+        }
+
         //Invert function for Vector2D
-        public void InvertVector2D()
+        public void Invert()
         {
             x = -x;
             y = -y;
@@ -118,7 +142,7 @@ namespace Physics2d
         /// <summary>
         /// Gets the magnitude or length of this vector.
         /// </summary>
-        public float MagnitudeVector2D
+        public float Magnitude
         {
             get { return Mathf.Sqrt(x * x + y * y); }
         }
@@ -126,9 +150,9 @@ namespace Physics2d
         /// <summary>
         /// Normalize this vector.
         /// </summary>
-        public void NormalizeVector2D()
+        public void Normalize()
         {
-            float length = MagnitudeVector2D;
+            float length = Magnitude;
             if (length > 0)
             {
                 x *= 1 / length;
@@ -140,7 +164,7 @@ namespace Physics2d
         /// <summary>
         /// Gets the square of the magnitude.
         /// </summary>
-        public float SquareMagnitudeVector2D
+        public float SquareMagnitude
         {
             get { return x * x + y * y; }
         }
@@ -179,11 +203,7 @@ namespace Physics2d
         }
         //TODO NAME THIS PROPERLY
         //TODO NAME THIS PROPERLY
-        //Dot product
-        public static Vector2D operator *(Vector2D a, Vector2D b)
-        {
-            return new Vector2D(a.x * b.x, a.y * b.y);
-        }
+
         //Scale the vector by an amount
         public static Vector2D operator *(Vector2D a, float d)
         {
@@ -193,6 +213,18 @@ namespace Physics2d
         {
             return new Vector2D(a.x * d, a.y * d);
         }
+
+        /// <summary>
+        /// Calculate the dot product.
+        /// </summary>
+        /// <param name="lhs">The left vector.</param>
+        /// <param name="rhs">The right vector.</param>
+        /// <returns>The dot product.</returns>
+        public static float operator *(Vector2D lhs, Vector2D rhs)
+        {
+            return (lhs.x * rhs.x) + (lhs.y * rhs.y);
+        }
+
         //Division
         public static Vector2D operator /(Vector2D a, Vector2D b)
         {
@@ -201,6 +233,13 @@ namespace Physics2d
         public static Vector2D operator /(Vector2D a, float d)
         {
             return new Vector2D(a.x / d, a.y / d);
+        }
+
+        //Unity transform is in Vector3. How can I make my Vector2D compatible? 
+        //with the unity's transform
+        public static implicit operator Vector3(Vector2D v)
+        {
+            return new Vector2(v.x, v.y);
         }
 
         /// <summary>
@@ -235,13 +274,19 @@ namespace Physics2d
         }
 
         //TODO CROSS PRODUCT HAKKINDA KARAR VER ARAŞTIR
+        public float CrossProduct(Vector2D a, Vector2D b)
+        {
+            return (a.x * b.y) - (a.y * b.x);
+        }
+
+        //TODO ORTHONORMAL BASIS
 
         /// <summary>
         /// Calculate the dot product.
         /// </summary>
         /// <param name="vector">The vector.</param>
         /// <returns>The dot product.</returns>
-        public double ScalarProduct(Vector2D vector)
+        public float ScalarProduct(Vector2D vector)
         {
             return (x * vector.x) + (y * vector.y);
         }
@@ -253,17 +298,12 @@ namespace Physics2d
         {
             x = y = 0;
         }
-    }
 
-
-    //TODO Testler
-    public class Test
-    {
-        public void test()
+        public static Vector2D RandomVector(Vector2D min, Vector2D max)
         {
-            Vector2D x = new Vector2D();
-
+            return new Vector2D(Random.Range(min.x, max.x), Random.Range(min.y, max.y));
         }
     }
+
 }
 
